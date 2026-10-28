@@ -15,6 +15,11 @@ class Company extends Model
         return $this->hasMany(CompanyDomain::class);
     }
 
+    public function applicants()
+    {
+        return $this->hasMany(Applicantdata::class, 'company_id');
+    }
+
     /** URL relatif (same-origin) ke logo di disk "public" (php artisan storage:link). */
     public function logoUrl(): ?string
     {

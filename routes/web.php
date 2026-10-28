@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\ApplicantAdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\MetaController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\TenantController;
+use App\Http\Middleware\AdminApiToken;
 use App\Http\Middleware\EnsureSameCompany;
 use App\Http\Middleware\ResolveCompany;
 use App\Models\CompanyDomain;
@@ -54,4 +56,17 @@ Route::prefix('api')->middleware(ResolveCompany::class)->group(function () {
         Route::post('/documents/{id}/replace', [DocumentController::class, 'replace'])->whereNumber('id')->middleware('throttle:60,1');
         Route::delete('/documents/{id}', [DocumentController::class, 'destroy'])->whereNumber('id');
     });
+});
+
+/*
+| API admin (baca-saja) untuk konsol Astro di Cloudflare.
+| Di luar ResolveCompany (mencakup semua perusahaan), dilindungi token Bearer (AdminApiToken).
+| Alamatnya /api/admin/... sehingga sudah diteruskan oleh Nginx ke Laravel.
+*/
+Route::prefix('api/admin')->middleware([AdminApiToken::class, 'throttle:120,1'])->group(function () {
+    Route::get('/meta', [ApplicantAdminController::class, 'meta']);
+    Route::get('/summary', [ApplicantAdminController::class, 'summary']);
+    Route::get('/applicants', [ApplicantAdminController::class, 'index']);
+    Route::get('/applicants/export', [ApplicantAdminController::class, 'export']);
+    Route::get('/applicants/{id}', [ApplicantAdminController::class, 'show'])->whereNumber('id');
 });
