@@ -3,14 +3,11 @@
 return [
 
     // Disk penyimpanan file (lihat config/filesystems.php) dan cara file dibuka:
-    // 'private'       : (DEFAULT) tanpa ACL, hanya bisa dibuka lewat presigned URL 10 menit. Bucket tidak boleh publik.
-    // 'public-policy' : tanpa ACL, dibuka lewat URL langsung. Akses baca publik diatur lewat bucket policy.
     // 'public'        : objek diberi ACL public-read, dibuka lewat URL langsung. Bucket harus mengizinkan ACL.
-    //                   JANGAN dipakai untuk KTP/KK/ijazah: siapa pun yang punya URL bisa membukanya.
-    //
-    // Default sengaja 'private' (aman jika .env lupa diisi).
+    // 'public-policy' : tanpa ACL, dibuka lewat URL langsung. Akses baca publik diatur lewat bucket policy.
+    // 'private'       : tanpa ACL, hanya bisa dibuka lewat presigned URL 10 menit (disarankan untuk produksi).
     'file_disk'       => env('APPLICANT_FILE_DISK', 's3'),
-    'file_visibility' => env('APPLICANT_FILE_VISIBILITY', 'private'),
+    'file_visibility' => env('APPLICANT_FILE_VISIBILITY', 'public'),
 
     // Masa berlaku link konfirmasi email (menit)
     'verification_ttl_minutes' => 60 * 24,

@@ -61,10 +61,9 @@ Route::prefix('api')->middleware(ResolveCompany::class)->group(function () {
 /*
 | API admin (baca-saja) untuk konsol Astro di Cloudflare.
 | Di luar ResolveCompany (mencakup semua perusahaan), dilindungi token Bearer (AdminApiToken).
-| Urutan middleware penting: throttle HARUS sebelum AdminApiToken agar permintaan berlebih ditolak sebelum diproses.
 | Alamatnya /api/admin/... sehingga sudah diteruskan oleh Nginx ke Laravel.
 */
-Route::prefix('api/admin')->middleware(['throttle:120,1', AdminApiToken::class])->group(function () {
+Route::prefix('api/admin')->middleware([AdminApiToken::class, 'throttle:120,1'])->group(function () {
     Route::get('/meta', [ApplicantAdminController::class, 'meta']);
     Route::get('/summary', [ApplicantAdminController::class, 'summary']);
     Route::get('/applicants', [ApplicantAdminController::class, 'index']);

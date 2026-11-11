@@ -205,24 +205,9 @@ kirim ulang/reset; respons yang tidak membocorkan email terdaftar; validasi inpu
 `applicant_id` baru acak; sertifikat HTTPS hanya untuk domain yang terdaftar (Caddy).
 
 Perlu perhatian:
-- **File pelamar kini `private` secara default.** `APPLICANT_FILE_VISIBILITY` default-nya `private` (juga bila baris itu
-  dihapus dari `.env`): file hanya bisa dibuka lewat presigned URL 10 menit. Pastikan bucket tidak publik
-  ("Block all public access") dan `.env` tidak mengisi `APPLICANT_FILE_VISIBILITY=public`. Link presigned kedaluwarsa dalam
-  10 menit, jadi halaman (termasuk konsol admin) yang dibiarkan terbuka lebih lama perlu dimuat ulang agar gambar tampil lagi.
-  Jika nanti ada file yang terlanjur diunggah dengan mode `public` (ACL public-read), file itu tetap publik sampai ACL-nya
-  dicabut; kosongkan bucket development atau cabut ACL-nya sebelum dipakai sungguhan.
-- **API admin** (`/api/admin/*`): throttle berjalan sebelum pengecekan token; token salah dibatasi 10 kali per 5 menit
-  per IP (lalu 429) tanpa mengunci pemegang token yang benar. Disarankan mengisi `ADMIN_API_HOSTS` dengan satu host khusus
-  agar API ini tidak terjangkau dari domain tenant. Token masih satu untuk semua pemakai dan belum ada log per orang.
+- **S3 public (sementara).** KTP, KK, ijazah bisa dibuka siapa pun yang punya URL (nama file acak hanya mempersulit tebakan).
+  Sebelum dipakai publik: `APPLICANT_FILE_VISIBILITY=private` dan bucket tidak publik. Aplikasi lalu memakai presigned URL 10 menit.
 - **Livewire lama** (`/applicant`) menyimpan password plain text. Matikan setelah portal baru berjalan.
 - Batas Gmail sekitar 500 email/hari untuk semua perusahaan. Jika volume besar, pakai layanan email transaksional.
 - Logo di email tidak disertakan (hanya nama perusahaan), karena memakai template email bawaan Laravel.
 - Halaman admin yang menampilkan data pelamar harus memakai `{{ }}` (escape) di Blade agar aman dari XSS.
-
-## F. Tes
-```bash
-php artisan test
-```
-Tes memakai SQLite in-memory dan menolak berjalan di database lain (pengaman di `tests/TestCase.php`), jadi MySQL lokal Anda aman. `tests/Feature/TenantIsolationTest.php` memastikan data satu perusahaan tidak
-bisa dibaca atau diubah dari domain perusahaan lain; jalankan sebelum dan sesudah mengubah kode yang menyentuh data pelamar
-atau menambah perusahaan. Tes memerlukan ekstensi PHP `pdo_sqlite`.

@@ -57,16 +57,12 @@ return new class extends Migration
             });
         }
 
-        // Pelonggaran NOT NULL -> NULL hanya perlu untuk tabel lama di MySQL. Pada database baru kolomnya sudah
-        // nullable (lihat Schema::create di atas), dan sintaks MODIFY memang khusus MySQL/MariaDB (bukan SQLite untuk tes).
-        if (in_array(DB::getDriverName(), ['mysql', 'mariadb'], true)) {
-            foreach ($this->varchar255 as $col) {
-                DB::statement("ALTER TABLE `applicantdatas` MODIFY `{$col}` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL");
-            }
-            DB::statement('ALTER TABLE `applicantdatas` MODIFY `tgl_lahir` DATE NULL');
-            // 0 = baru register / belum submit, 1 = data sudah disubmit
-            DB::statement('ALTER TABLE `applicantdatas` MODIFY `status` INT NOT NULL DEFAULT 0');
+        foreach ($this->varchar255 as $col) {
+            DB::statement("ALTER TABLE `applicantdatas` MODIFY `{$col}` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL");
         }
+        DB::statement('ALTER TABLE `applicantdatas` MODIFY `tgl_lahir` DATE NULL');
+        // 0 = baru register / belum submit, 1 = data sudah disubmit
+        DB::statement('ALTER TABLE `applicantdatas` MODIFY `status` INT NOT NULL DEFAULT 0');
 
         Schema::table('applicantdatas', function (Blueprint $table) {
             if (! Schema::hasColumn('applicantdatas', 'company_id')) {
